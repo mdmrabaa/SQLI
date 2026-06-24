@@ -43,8 +43,12 @@ HTML_SEARCH = '''
 
 def get_db_connection():
     if USE_POSTGRES:
-        if psycopg2 is None:
-            raise RuntimeError('psycopg2 is required for PostgreSQL support')
+        try:
+            import psycopg2
+            from psycopg2.extras import RealDictCursor
+        except Exception as exc:
+            raise RuntimeError(f'PostgreSQL import failure: {exc}') from exc
+
         return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
 
     conn = sqlite3.connect(DB_FILE)
