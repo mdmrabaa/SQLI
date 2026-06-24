@@ -69,20 +69,23 @@ def login():
         # Vulnerable SQL string concatenation
         query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
 
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        conn = None
+        user = None
         try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
             cursor.execute(query)
             user = cursor.fetchone()
         except Exception as error:
             message = f'Error: {error}'
-            user = None
         finally:
-            conn.close()
+            if conn is not None:
+                conn.close()
 
         if user:
             return render_template_string('<h1>Welcome, {{ user }}</h1><p>Login successful.</p>', user=user['username'])
-        message = 'Invalid credentials.'
+        if not message:
+            message = 'Invalid credentials.'
 
     return render_template_string(HTML_LOGIN, message=message)
 
@@ -94,9 +97,10 @@ def search():
     if query:
         # Vulnerable query construction
         sql = f"SELECT * FROM products WHERE name LIKE '%{query}%' OR description LIKE '%{query}%';"
-        conn = get_db_connection()
-        cursor = conn.cursor()
+        conn = None
         try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
             cursor.execute(sql)
             rows = cursor.fetchall()
             if not rows:
@@ -104,7 +108,8 @@ def search():
         except Exception as error:
             message = f'Error: {error}'
         finally:
-            conn.close()
+            if conn is not None:
+                conn.close()
 
     return render_template_string(HTML_SEARCH, rows=rows, message=message)
 
