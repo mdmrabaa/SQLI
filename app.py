@@ -74,7 +74,7 @@ def login():
         try:
             cursor.execute(query)
             user = cursor.fetchone()
-        except sqlite3.Error as error:
+        except Exception as error:
             message = f'Error: {error}'
             user = None
         finally:
@@ -101,7 +101,7 @@ def search():
             rows = cursor.fetchall()
             if not rows:
                 message = 'No results found.'
-        except sqlite3.Error as error:
+        except Exception as error:
             message = f'Error: {error}'
         finally:
             conn.close()
