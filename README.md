@@ -52,22 +52,72 @@ If you want to access the app from other devices on the same network, use your P
 
 For example: `http://192.168.1.12:5000/login`
 
-### Deploying on Render
-To host this app on Render:
+### Deploying on Render with a SQL database
+To host this app online for free, use Render for the web app and a free PostgreSQL database service.
 
-1. Create a Git repository in this folder and push it to GitHub, GitLab, or Bitbucket.
+1. Push your repository to GitHub, GitLab, or Bitbucket.
 2. Sign in to Render and create a new Web Service.
-3. Connect your repository.
+3. Connect your repository and select this project.
 4. Use these settings:
    - Environment: `Python 3`
    - Build command: `pip install -r requirements.txt`
    - Start command: `gunicorn app:app`
 
-Render sets the `PORT` environment variable automatically, so the app will bind correctly.
+### Create a free PostgreSQL database
+- Option 1: Use Render's free PostgreSQL add-on.
+- Option 2: Use a free PostgreSQL host like ElephantSQL or Supabase.
 
-> Important: this app is intentionally insecure. Only deploy it to a private or temporary service for learning, not for production or public exposure.
+Then set this environment variable in Render:
 
-If you need temporary public access for a demo, use a tunnel service like `ngrok` or `localtunnel`, but keep the app offline when you're not using it.
+- `DATABASE_URL`
+
+Example value:
+
+`postgres://user:password@hostname:5432/databasename`
+
+### Initialize the database schema manually
+You need to create the schema and sample data yourself for your hosted SQL database.
+
+For PostgreSQL, connect to the database and run these commands:
+
+```sql
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS products;
+
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username TEXT NOT NULL,
+  password TEXT NOT NULL
+);
+
+CREATE TABLE products (
+  id SERIAL PRIMARY KEY,
+  name TEXT NOT NULL,
+  description TEXT NOT NULL
+);
+
+INSERT INTO users (username, password) VALUES
+  ('admin', 'secret123'),
+  ('alice', 'alicepass'),
+  ('bob', 'bobpass');
+
+INSERT INTO products (name, description) VALUES
+  ('Red Shirt', 'A comfortable red shirt'),
+  ('Blue Hat', 'A stylish blue hat'),
+  ('Coffee Mug', 'A ceramic mug for coffee'),
+  ('SQL Book', 'A beginner SQL guide');
+```
+
+If you prefer SQLite locally, run:
+
+```powershell
+python init_db.py
+```
+
+### Notes
+- This project is designed for training and is intentionally insecure.
+- Keep the hosted app private or temporary.
+- Use Render Postgres, ElephantSQL, or Supabase for free SQL hosting.
 
 ## How to use
 - Login with valid credentials: `admin` / `secret123`

@@ -2,7 +2,16 @@ import os
 from flask import Flask, request, render_template_string, redirect, url_for
 import sqlite3
 
-DB_FILE = 'database.db'
+DB_FILE = os.environ.get('SQLITE_DB', 'database.db')
+DATABASE_URL = os.environ.get('DATABASE_URL', '').strip()
+USE_POSTGRES = bool(DATABASE_URL)
+
+try:
+    import psycopg2
+    from psycopg2.extras import RealDictCursor
+except ImportError:
+    psycopg2 = None
+
 app = Flask(__name__)
 
 HTML_LOGIN = '''
@@ -24,7 +33,7 @@ HTML_SEARCH = '''
 </form>
 <ul>
 {% for row in rows %}
-  <li><strong>{{ row[1] }}</strong>: {{ row[2] }}</li>
+  <li><strong>{{ row['name'] }}</strong>: {{ row['description'] }}</li>
 {% endfor %}
 </ul>
 <p>{{ message }}</p>
@@ -33,6 +42,11 @@ HTML_SEARCH = '''
 
 
 def get_db_connection():
+    if USE_POSTGRES:
+        if psycopg2 is None:
+            raise RuntimeError('psycopg2 is required for PostgreSQL support')
+        return psycopg2.connect(DATABASE_URL, cursor_factory=RealDictCursor)
+
     conn = sqlite3.connect(DB_FILE)
     conn.row_factory = sqlite3.Row
     return conn
