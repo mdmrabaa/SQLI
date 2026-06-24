@@ -63,6 +63,8 @@ To host this app online for free, use Render for the web app and a free PostgreS
    - Build command: `pip install -r requirements.txt`
    - Start command: `gunicorn app:app`
 
+Render will install `setuptools` and `wheel` as part of the build to support Gunicorn.
+
 ### Create a free PostgreSQL database
 - Option 1: Use Render's free PostgreSQL add-on.
 - Option 2: Use a free PostgreSQL host like ElephantSQL or Supabase.
