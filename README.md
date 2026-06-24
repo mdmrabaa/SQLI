@@ -61,9 +61,9 @@ To host this app online for free, use Render for the web app and a free PostgreS
 4. Use these settings:
    - Environment: `Python 3`
    - Build command: `pip install -r requirements.txt`
-   - Start command: `gunicorn app:app`
+   - Start command: `python -m waitress --listen=0.0.0.0:$PORT app:app`
 
-Render will install `setuptools` and `wheel` as part of the build to support Gunicorn.
+If you prefer Gunicorn, you can try `gunicorn app:app` instead, but Render may work more reliably with `waitress` for this app.
 
 ### Create a free PostgreSQL database
 - Option 1: Use Render's free PostgreSQL add-on.
